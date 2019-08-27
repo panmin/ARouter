@@ -21,6 +21,9 @@ import com.alibaba.android.arouter.facade.Postcard;
 import com.alibaba.android.arouter.facade.callback.NavCallback;
 import com.alibaba.android.arouter.launcher.ARouter;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -208,6 +211,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.getFragment:
                 Fragment fragment = (Fragment) ARouter.getInstance().build("/test/fragment").navigation();
                 Toast.makeText(this, "找到Fragment:" + fragment.toString(), Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.callJavaService:
+                try {
+                    Uri uri = Uri.parse("doing://module/service1/test2");
+                    String routerStr = File.separator+uri.getAuthority()+File.separator+uri.getPathSegments().get(0);
+                    Object navigation = ARouter.getInstance().build(routerStr).navigation();
+                    Class<?> aClass = navigation.getClass();
+                    Method test1 = aClass.getMethod(uri.getLastPathSegment());
+                    test1.invoke(navigation);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
                 break;
             default:
                 break;
